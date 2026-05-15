@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ProjectHub — Student Projects Done Right</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   RESET & BASE
+   ========================================================= */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+/* =========================================================
+   CSS VARIABLES — DARK THEME (default)
+   ========================================================= */
+:root,
+[data-theme="dark"] {
+  --accent: #c8f135;
+  --accent2: #ff5c35;
+  --accent-glow: rgba(200, 241, 53, 0.25);
+  --bg: #080808;
+  --bg-card: #111111;
+  --bg-elevated: #181818;
+  --fg: #f4f1eb;
+  --fg-muted: #6b6560;
+  --fg-subtle: rgba(244, 241, 235, 0.55);
+  --border: rgba(244, 241, 235, 0.1);
+  --border-hover: rgba(244, 241, 235, 0.22);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --nav-bg: rgba(8, 8, 8, 0.94);
+  --modal-bg: #111111;
+  --input-bg: #1a1a1a;
+  --toggle-bg: rgba(244, 241, 235, 0.06);
+  --step-bg: #080808;
+}
+
+[data-theme="light"] {
+  --accent: #c8f135;
+  --accent2: #ff5c35;
+  --accent-glow: rgba(200, 241, 53, 0.25);
+  --bg: #ffffff;
+  --bg-card: #f2f2f2;
+  --bg-elevated: #e8e8e8;
+  --fg: #080808;
+  --fg-muted: #888888;
+  --fg-subtle: rgba(8, 8, 8, 0.55);
+  --border: rgba(8, 8, 8, 0.1);
+  --border-hover: rgba(8, 8, 8, 0.22);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --modal-bg: #ffffff;
+  --input-bg: #f0f0f0;
+  --toggle-bg: rgba(8, 8, 8, 0.05);
+  --step-bg: #ffffff;
+}
+
+/* =========================================================
+   BODY & TYPOGRAPHY
+   ========================================================= */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  transition: background 0.35s ease, color 0.35s ease;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-muted); }
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 5%;
+  transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+}
+.nav.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.nav-logo-icon svg { width: 16px; height: 16px; }
+.nav-logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.nav-links a:hover { opacity: 1; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Settings toggle button */
+.settings-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--toggle-bg);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.3s;
+  position: relative;
+}
+.settings-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-hover);
+}
+.settings-btn.open { transform: rotate(60deg); }
+.settings-btn svg { width: 16px; height: 16px; }
+
+/* Settings dropdown */
+.settings-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 8px;
+  min-width: 170px;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  box-shadow: var(--shadow);
+}
+.settings-dropdown.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: all;
+}
+.settings-dropdown-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  font-weight: 600;
+  padding: 6px 10px 10px;
+}
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.theme-option:hover { background: var(--toggle-bg); }
+.theme-option.active {
+  background: rgba(200, 241, 53, 0.1);
+  color: var(--accent);
+}
+[data-theme="light"] .theme-option.active {
+  background: rgba(200, 241, 53, 0.1);
+}
+.theme-option svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.nav-order {
+  background: var(--accent);
+  color: #080808;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.nav-order:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav-hamburger span {
+  width: 22px; height: 2px;
+  background: var(--fg);
+  border-radius: 2px;
+  transition: all 0.3s;
+  display: block;
+}
+.nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 199;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a,
+.mobile-menu .mm-link {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 6vw, 32px);
+  font-weight: 800;
+  color: var(--fg);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.35s, transform 0.35s;
+  font-family: 'Syne', sans-serif;
+}
+.mobile-menu.open a,
+.mobile-menu.open .mm-link {
+  opacity: 1;
+  transform: none;
+}
+.mobile-menu.open a:nth-child(1) { transition-delay: 0.05s; }
+.mobile-menu.open a:nth-child(2) { transition-delay: 0.1s; }
+.mobile-menu.open a:nth-child(3) { transition-delay: 0.15s; }
+.mobile-menu.open a:nth-child(4) { transition-delay: 0.2s; }
+.mobile-menu.open .mm-link { transition-delay: 0.25s; }
+
+/* Mobile settings strip */
+.mobile-theme-strip {
+  display: flex;
+  gap: 10px;
+}
+.mobile-theme-btn {
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg-muted);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s;
+}
+.mobile-theme-btn.active {
+  background: rgba(200, 241, 53, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+[data-theme="light"] .mobile-theme-btn.active {
+  background: rgba(200, 241, 53, 0.1);
+}
+.mobile-theme-btn svg { width: 14px; height: 14px; }
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 5% 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.13;
+  pointer-events: none;
+}
+.hero-glow-1 {
+  width: 550px; height: 550px;
+  background: var(--accent);
+  top: -180px; right: -80px;
+  animation: floatGlow1 8s ease-in-out infinite;
+}
+.hero-glow-2 {
+  width: 350px; height: 350px;
+  background: var(--accent2);
+  bottom: -80px; left: -60px;
+  animation: floatGlow2 10s ease-in-out infinite;
+}
+@keyframes floatGlow1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 20px); }
+}
+@keyframes floatGlow2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(200, 241, 53, 0.3);
+  background: rgba(200, 241, 53, 0.07);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+  animation: heroUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(42px, 8vw, 88px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+  animation: heroUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.08s;
+}
+h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--fg-muted);
+  max-width: 460px;
+  margin-bottom: 44px;
+  font-weight: 300;
+  line-height: 1.7;
+  animation: heroUp 0.7s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  animation: heroUp 0.7s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+.btn-main {
+  background: var(--accent);
+  color: #080808;
+  padding: 15px 36px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--accent-glow);
+}
+.btn-main:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--fg);
+  padding: 15px 36px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghost:hover {
+  border-color: var(--border-hover);
+  background: var(--toggle-bg);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  animation: heroUp 0.7s 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hstat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--accent);
+  display: block;
+  line-height: 1;
+}
+.hstat-lbl {
+  font-size: 12px;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* =========================================================
+   MARQUEE
+   ========================================================= */
+.marquee {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 16px 0;
+  overflow: hidden;
+}
+.mq-track {
+  display: flex;
+  gap: 56px;
+  animation: scrollMarquee 22s linear infinite;
+  white-space: nowrap;
+  width: max-content;
+}
+.mq-item {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.35;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.mq-dot {
+  width: 4px; height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+@keyframes scrollMarquee { to { transform: translateX(-50%); } }
+
+/* =========================================================
+   SECTIONS (shared)
+   ========================================================= */
+section { padding: 100px 5%; }
+.sec-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(28px, 5vw, 50px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 52px;
+}
+
+/* Fade-in on scroll (JS adds .visible) */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* =========================================================
+   SERVICES
+   ========================================================= */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+}
+
+.svc {
+  background: var(--bg);
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.svc:hover { background: var(--bg-card); }
+.svc::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.svc:hover::after { transform: scaleX(1); }
+
+.svc-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 72px;
+  font-weight: 800;
+  opacity: 0.05;
+  position: absolute;
+  top: 16px; right: 28px;
+  line-height: 1;
+  user-select: none;
+}
+.svc-icon {
+  width: 46px; height: 46px;
+  background: rgba(200, 241, 53, 0.1);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+  transition: background 0.3s, transform 0.3s;
+}
+.svc:hover .svc-icon {
+  background: rgba(200, 241, 53, 0.18);
+  transform: scale(1.08);
+}
+.svc-icon svg { width: 22px; height: 22px; color: var(--accent); }
+.svc-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.svc-desc {
+  color: var(--fg-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 24px;
+}
+.tier-rows { display: flex; flex-direction: column; gap: 6px; }
+.trow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  transition: border-color 0.2s;
+}
+.trow:hover { border-color: var(--border-hover); }
+.trow-name { font-weight: 500; }
+.trow-time { color: var(--fg-muted); font-size: 12px; }
+.trow.vip .trow-name { color: var(--accent); }
+
+/* =========================================================
+   PRICING
+   ========================================================= */
+#pricing { background: var(--bg-card); }
+.pricing-intro {
+  font-size: 15px;
+  color: var(--fg-muted);
+  max-width: 600px;
+  margin-bottom: 52px;
+  font-weight: 300;
+  line-height: 1.7;
+  margin-top: -32px;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 48px;
+}
+.pcard {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 36px 28px;
+  position: relative;
+  background: var(--bg);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+}
+.pcard:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow);
+}
+.pcard.featured {
+  border-color: var(--accent);
+  background: rgba(200, 241, 53, 0.03);
+}
+[data-theme="light"] .pcard.featured { background: rgba(200, 241, 53, 0.03); }
+.pcard.featured::before {
+  content: 'Most popular';
+  position: absolute;
+  top: -13px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #080808;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.pcard-tier {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+.pcard.featured .pcard-tier { color: var(--accent); }
+.pcard-speed {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.pcard-sub { font-size: 12px; color: var(--fg-muted); margin-bottom: 20px; }
+.pcard-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+.pcard-features li {
+  font-size: 13px;
+  color: var(--fg-subtle);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.pcard-features li::before {
+  content: '';
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: var(--accent);
+  border-radius: 50%;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  opacity: 0.85;
+}
+.pcard-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pcard-btn:hover { background: var(--toggle-bg); }
+.pcard.featured .pcard-btn {
+  background: var(--accent);
+  color: #080808;
+  border-color: var(--accent);
+}
+.pcard.featured .pcard-btn:hover {
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+  margin-top: 52px;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 27px; left: 12%; right: 12%;
+  height: 1px;
+  background: var(--border);
+}
+.step {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+  text-align: center;
+}
+.step-n {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--step-bg);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  margin: 0 auto 20px;
+  transition: all 0.3s;
+}
+.step:hover .step-n {
+  background: var(--accent);
+  color: #080808;
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+.step-t {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.step-d { font-size: 13px; color: var(--fg-muted); line-height: 1.6; font-weight: 300; }
+
+/* =========================================================
+   BUY vs RENT
+   ========================================================= */
+#compare { background: var(--bg-card); }
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 52px;
+}
+.ccard {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 44px 36px;
+  background: var(--bg);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.ccard:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+}
+.ccard.hi { border-color: rgba(255, 92, 53, 0.35); background: rgba(255, 92, 53, 0.02); }
+.ccard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.ccard-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+}
+.ctag {
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.ctag.buy {
+  background: rgba(200, 241, 53, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(200, 241, 53, 0.25);
+}
+.ctag.rent {
+  background: rgba(255, 92, 53, 0.12);
+  color: var(--accent2);
+  border: 1px solid rgba(255, 92, 53, 0.25);
+}
+.cfeat {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  align-items: flex-start;
+}
+.cfeat:last-child { border-bottom: none; }
+.cfeat-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.cfeat-text { color: var(--fg-subtle); font-weight: 300; line-height: 1.55; }
+.cfeat-text strong { color: var(--fg); font-weight: 500; }
+
+/* =========================================================
+   FAQ
+   ========================================================= */
+.faq-wrap { max-width: 700px; margin-top: 52px; }
+.fq { border-bottom: 1px solid var(--border); }
+.fq-q {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 22px 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.fq-icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s, background 0.3s;
+  flex-shrink: 0;
+}
+.fq-icon svg { width: 12px; height: 12px; color: var(--accent); transition: transform 0.3s; }
+.fq.open .fq-icon { background: rgba(200, 241, 53, 0.1); }
+.fq.open .fq-icon svg { transform: rotate(45deg); }
+.fq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.fq-a-inner { font-size: 14px; color: var(--fg-muted); line-height: 1.8; padding-bottom: 22px; font-weight: 300; }
+
+/* =========================================================
+   CTA
+   ========================================================= */
+.cta-sec { text-align: center; position: relative; overflow: hidden; }
+.cta-glow {
+  position: absolute;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  background: var(--accent);
+  filter: blur(110px);
+  opacity: 0.08;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: ctaGlow 6s ease-in-out infinite;
+}
+@keyframes ctaGlow {
+  0%, 100% { opacity: 0.08; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.13; transform: translateX(-50%) scale(1.1); }
+}
+.cta-inner { position: relative; z-index: 1; }
+.cta-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 6vw, 68px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.cta-sub {
+  font-size: 16px;
+  color: var(--fg-muted);
+  max-width: 380px;
+  margin: 0 auto 44px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 5% 32px;
+  background: var(--bg);
+}
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 36px;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.footer-logo-icon {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+}
+.footer-logo-icon svg { width: 13px; height: 13px; }
+.footer-logo span { color: var(--accent); }
+.footer-tagline {
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-weight: 300;
+  max-width: 200px;
+  line-height: 1.6;
+}
+
+/* Nav links group */
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer-nav-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 4px;
+}
+.footer-nav a {
+  font-size: 13px;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-block;
+}
+.footer-nav a:hover { color: var(--fg); }
+
+/* Contact group */
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer-contact-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 4px;
+}
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.footer-contact-item:hover { color: var(--fg); }
+.footer-contact-item svg {
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+.footer-contact-item:hover svg { opacity: 1; }
+
+/* Socials */
+.footer-socials-group {}
+.footer-socials-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 14px;
+}
+.footer-socials {
+  display: flex;
+  gap: 10px;
+}
+.footer-social-btn {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--toggle-bg);
+  color: var(--fg-muted);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+}
+.footer-social-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200, 241, 53, 0.07);
+  transform: translateY(-3px);
+}
+.footer-social-btn svg { width: 18px; height: 18px; }
+
+/* Bottom bar */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.footer-copy { font-size: 12px; color: var(--fg-muted); }
+
+@media (max-width: 768px) {
+  .footer-top { flex-direction: column; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .footer-socials { justify-content: flex-start; }
+}
+
+/* =========================================================
+   ORDER MODAL
+   ========================================================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 44px;
+  max-width: 580px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(18px) scale(0.98);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.overlay.open .modal { transform: none; }
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 18px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  color: var(--fg);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: var(--toggle-bg); }
+.modal-close svg { width: 14px; height: 14px; }
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.modal-sub {
+  color: var(--fg-muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.fl {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-subtle);
+  margin-bottom: 6px;
+}
+.fi {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--fg);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.fi:focus { border-color: rgba(200, 241, 53, 0.4); }
+textarea.fi { resize: vertical; min-height: 80px; }
+
+.fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.comp-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.cp {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--input-bg);
+}
+.cp:hover { border-color: var(--border-hover); }
+.cp.selected { border-color: var(--accent); background: rgba(200, 241, 53, 0.08); }
+.cp-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.cp.selected .cp-name { color: var(--accent); }
+.cp-price { font-size: 13px; color: var(--fg-muted); }
+.cp.selected .cp-price { color: rgba(200, 241, 53, 0.7); }
+
+.slide-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.sp-opt {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--input-bg);
+}
+.sp-opt:hover { border-color: var(--border-hover); }
+.sp-opt.selected { border-color: var(--accent); background: rgba(200, 241, 53, 0.08); }
+.sp-opt-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+.sp-opt.selected .sp-opt-num { color: var(--accent); }
+.sp-opt-fee { font-size: 11px; color: var(--fg-muted); margin-top: 5px; }
+.sp-opt.selected .sp-opt-fee { color: rgba(200, 241, 53, 0.6); }
+
+/* Physical delivery toggle - ONLY for Smart Models */
+.delivery-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--toggle-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.dt-btn {
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background 0.2s, color 0.2s;
+}
+.dt-btn:first-child { border-right: 1px solid var(--border); }
+.dt-btn.active { background: rgba(200, 241, 53, 0.1); color: var(--accent); }
+.dt-badge {
+  background: rgba(255, 92, 53, 0.18);
+  color: var(--accent2);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.bill-box {
+  background: rgba(200, 241, 53, 0.05);
+  border: 1px solid rgba(200, 241, 53, 0.18);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+[data-theme="light"] .bill-box {
+  background: rgba(200, 241, 53, 0.05);
+  border-color: rgba(200, 241, 53, 0.18);
+}
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--fg-muted);
+  padding: 3px 0;
+}
+.bill-total {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  border-top: 1px solid rgba(200, 241, 53, 0.2);
+  padding-top: 10px;
+  margin-top: 8px;
+}
+.bill-total-val { color: var(--accent); }
+.extra-fee-note {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: 8px;
+  border-top: 1px solid rgba(200, 241, 53, 0.1);
+  padding-top: 8px;
+}
+
+.notice-box {
+  background: rgba(255, 92, 53, 0.07);
+  border: 1px solid rgba(255, 92, 53, 0.25);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--fg-subtle);
+  line-height: 1.8;
+}
+.notice-box strong { color: var(--accent2); }
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: #080808;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin-top: 10px;
+}
+.submit-btn:hover:not(:disabled) {
+  box-shadow: 0 8px 24px var(--accent-glow);
+  transform: translateY(-1px);
+}
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #080808;
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: toastIn 0.3s ease;
+  pointer-events: none;
+  white-space: normal;
+  word-break: break-word;
+  width: max-content;
+  max-width: min(480px, calc(100vw - 32px));
+  text-align: center;
+  line-height: 1.5;
+}
+.toast-message.error { background: #ff5c35; color: white; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-24px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1024px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
+}
+
+@media (max-width: 768px) {
+  section { padding: 70px 5%; }
+  .services-grid,
+  .compare-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .steps::before { display: none; }
+  .hero-stats { flex-wrap: wrap; gap: 28px; }
+  .nav .nav-links { display: none; }
+  .nav .nav-order { display: none; }
+  .nav .settings-btn { display: none; }
+  .nav-hamburger { display: flex; }
+  .svc { padding: 32px 24px; }
+  .ccard { padding: 28px 22px; }
+  .fg2 { grid-template-columns: 1fr; }
+  .comp-pick { grid-template-columns: 1fr 1fr; }
+  .modal { padding: 28px 20px; border-radius: 16px; }
+}
+
+@media (max-width: 480px) {
+  h1 { letter-spacing: -1px; }
+  .hero-btns { flex-direction: column; }
+  .btn-main, .btn-ghost { width: 100%; text-align: center; justify-content: center; }
+  .steps { grid-template-columns: 1fr; }
+  .slide-pick { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats { gap: 18px; }
+  .hero-stats .hstat-num { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SVG ICON DEFINITIONS (reusable) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="icon-hub" viewBox="0 0 16 16" fill="none">
+    <path d="M8 2v3M8 11v3M2 8h3M11 8h3M3.75 3.75l2.12 2.12M10.13 10.13l2.12 2.12M12.25 3.75l-2.12 2.12M5.87 10.13l-2.12 2.12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-close" viewBox="0 0 16 16" fill="none">
+    <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-plus" viewBox="0 0 16 16" fill="none">
+    <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-sun" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M8 1.5V3M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M12.6 3.4l-1.1 1.1M4.5 11.5l-1.1 1.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-moon" viewBox="0 0 16 16" fill="none">
+    <path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 107 7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M12.95 3.05l-1.41 1.41M4.46 11.54l-1.41 1.41" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-model" viewBox="0 0 22 22" fill="none">
+    <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="11" cy="11" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M11 7V5M11 17v-2M7 11H5M17 11h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M8.5 8.5l-2-2M15.5 15.5l-2-2M13.5 8.5l2-2M6.5 15.5l2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/>
+  </symbol>
+  <symbol id="icon-slides" viewBox="0 0 22 22" fill="none">
+    <rect x="2" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M11 16v2M7 18h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M7 9h8M7 12h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
+  </symbol>
+</svg>
+
+<!-- =========================================================
+     NAVIGATION
+     ========================================================= -->
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#">
+    Project<span>Hub</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+
+  <div class="nav-right" style="position:relative">
+    <div style="position:relative">
+      <button class="settings-btn" id="settings-btn" aria-label="Settings" onclick="toggleSettings()">
+        <svg><use href="#icon-settings"/></svg>
+      </button>
+      <div class="settings-dropdown" id="settings-dropdown">
+        <div class="settings-dropdown-label">Theme</div>
+        <button class="theme-option active" id="opt-dark" onclick="setTheme('dark')">
+          <svg><use href="#icon-moon"/></svg> Dark
+        </button>
+        <button class="theme-option" id="opt-light" onclick="setTheme('light')">
+          <svg><use href="#icon-sun"/></svg> Light
+        </button>
+      </div>
+    </div>
+    <button class="nav-order" onclick="openOrder()">Order now</button>
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#services" onclick="closeMobileMenu()">Services</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+  <a href="#how" onclick="closeMobileMenu()">How it works</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <div class="mobile-theme-strip">
+    <button class="mobile-theme-btn active" id="mob-dark" onclick="setTheme('dark'); closeMobileMenu()">
+      <svg width="14" height="14"><use href="#icon-moon"/></svg> Dark
+    </button>
+    <button class="mobile-theme-btn" id="mob-light" onclick="setTheme('light'); closeMobileMenu()">
+      <svg width="14" height="14"><use href="#icon-sun"/></svg> Light
+    </button>
+  </div>
+  <button class="btn-main mm-link" style="font-size:18px;padding:14px 36px" onclick="closeMobileMenu(); openOrder()">Order now</button>
+</div>
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+<section class="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now taking orders for this semester
+    </div>
+    <h1>School projects,<br><em>actually</em> done right.</h1>
+    <p class="hero-sub">Professional Smart Models and PowerPoint presentations for students — on time, with 3 months of maintenance included.</p>
+    <div class="hero-btns">
+      <button class="btn-main" onclick="openOrder()">Order now</button>
+      <a href="#services" class="btn-ghost">See what we offer</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <span class="hstat-num">3mo</span>
+        <span class="hstat-lbl">Maintenance</span>
+      </div>
+      <div>
+        <span class="hstat-num">5d</span>
+        <span class="hstat-lbl">Fastest delivery</span>
+      </div>
+      <div>
+        <span class="hstat-num">2</span>
+        <span class="hstat-lbl">Service types</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee">
+  <div class="mq-track">
+    <span class="mq-item"><span class="mq-dot"></span>Smart Models</span>
+    <span class="mq-item"><span class="mq-dot"></span>PowerPoint Presentations</span>
+    <span class="mq-item"><span class="mq-dot"></span>3 Months Maintenance</span>
+    <span class="mq-item"><span class="mq-dot"></span>Buy or Rent</span>
+    <span class="mq-item"><span class="mq-dot"></span>Standard · Premium · VIP</span>
+    <span class="mq-item"><span class="mq-dot"></span>Pickup or Delivery</span>
+    <span class="mq-item"><span class="mq-dot"></span>Delivered On Time</span>
+    <span class="mq-item"><span class="mq-dot"></span>Smart Models</span>
+    <span class="mq-item"><span class="mq-dot"></span>PowerPoint Presentations</span>
+    <span class="mq-item"><span class="mq-dot"></span>3 Months Maintenance</span>
+    <span class="mq-item"><span class="mq-dot"></span>Buy or Rent</span>
+    <span class="mq-item"><span class="mq-dot"></span>Standard · Premium · VIP</span>
+    <span class="mq-item"><span class="mq-dot"></span>Pickup or Delivery</span>
+    <span class="mq-item"><span class="mq-dot"></span>Delivered On Time</span>
+  </div>
+</div>
+
+<!-- =========================================================
+     SERVICES
+     ========================================================= -->
+<section id="services">
+  <span class="sec-label fade-up">What we offer</span>
+  <h2 class="sec-title fade-up">Two services.<br>Zero stress.</h2>
+  <div class="services-grid">
+    <div class="svc fade-up">
+      <div class="svc-num">01</div>
+      <div class="svc-icon">
+        <svg><use href="#icon-model"/></svg>
+      </div>
+      <div class="svc-name">Smart Models</div>
+      <p class="svc-desc">Fully built working models with real electronics — motors, sensors, LEDs, buzzers. Can be a robot, but not mainly a robot. Perfect for Science, STEM, Physics, and Engineering projects. Examples: line-following cart, proximity alarm, solar-powered fan, traffic light circuit, earthquake detector model. Buy outright or rent for your presentation day. Includes 3 months maintenance.</p>
+      <div class="tier-rows">
+        <div class="trow"><span class="trow-name">Standard</span><span class="trow-time">15–20 days</span></div>
+        <div class="trow"><span class="trow-name">Premium</span><span class="trow-time">10–15 days</span></div>
+        <div class="trow vip"><span class="trow-name">VIP</span><span class="trow-time">5–10 days</span></div>
+      </div>
+    </div>
+    <div class="svc fade-up" style="transition-delay:0.1s">
+      <div class="svc-num">02</div>
+      <div class="svc-icon">
+        <svg><use href="#icon-slides"/></svg>
+      </div>
+      <div class="svc-name">Presentations</div>
+      <p class="svc-desc">Professionally designed PowerPoint decks — not the default template. Clean layout, strong visuals, and structure that impresses teachers.</p>
+      <div class="tier-rows">
+        <div class="trow"><span class="trow-name">Standard</span><span class="trow-time">3–5 days</span></div>
+        <div class="trow"><span class="trow-name">Premium</span><span class="trow-time">2–4 days</span></div>
+        <div class="trow vip"><span class="trow-name">VIP</span><span class="trow-time">1–2 days</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     PRICING
+     ========================================================= -->
+<section id="pricing">
+  <span class="sec-label fade-up">Pricing</span>
+  <h2 class="sec-title fade-up">How your bill is built.</h2>
+  <p class="pricing-intro fade-up">Two things go into your price: how complex your project is and how fast you need it. We call you to confirm before anything starts.</p>
+  <div class="pricing-grid">
+    <div class="pcard fade-up">
+      <div class="pcard-tier">Standard</div>
+      <div class="pcard-speed">15–20 days</div>
+      <div class="pcard-sub">+$0 tier fee · $3 labor</div>
+      <ul class="pcard-features">
+        <li>Full model or presentation</li>
+        <li>3 months maintenance</li>
+        <li>Component sourcing handled</li>
+      </ul>
+      <button class="pcard-btn" onclick="openOrder('Standard')">Choose Standard</button>
+    </div>
+    <div class="pcard featured fade-up" style="transition-delay:0.08s">
+      <div class="pcard-tier">Premium</div>
+      <div class="pcard-speed">10–15 days</div>
+      <div class="pcard-sub">+$9 tier fee · $7 labor</div>
+      <ul class="pcard-features">
+        <li>Full model or presentation</li>
+        <li>3 months maintenance</li>
+        <li>Component sourcing handled</li>
+      </ul>
+      <button class="pcard-btn" onclick="openOrder('Premium')">Choose Premium</button>
+    </div>
+    <div class="pcard fade-up" style="transition-delay:0.16s">
+      <div class="pcard-tier">VIP</div>
+      <div class="pcard-speed">5–10 days</div>
+      <div class="pcard-sub">+$19 tier fee · $13 labor</div>
+      <ul class="pcard-features">
+        <li>Full model or presentation</li>
+        <li>3 months maintenance</li>
+        <li>Component sourcing handled</li>
+      </ul>
+      <button class="pcard-btn" onclick="openOrder('VIP')">Choose VIP</button>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     HOW IT WORKS
+     ========================================================= -->
+<section id="how">
+  <span class="sec-label fade-up">Process</span>
+  <h2 class="sec-title fade-up">How it works</h2>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-n">01</div>
+      <div class="step-t">Place your order</div>
+      <p class="step-d">Tell us what you need, pick your tier, and leave your phone number.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:0.08s">
+      <div class="step-n">02</div>
+      <div class="step-t">We call you</div>
+      <p class="step-d">We confirm the exact final price with you before anything starts.</p>
+    </div>
+    <div class="step fade-up" style="transition-delay:0.16s">
+      <div class="step-n">03</div>
+      <div class="step-t">Receive &amp; submit</div>
+      <p class="step-d">Delivered or picked up within your tier's timeline. 3 months maintenance included.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     BUY vs RENT
+     ========================================================= -->
+<section id="compare">
+  <span class="sec-label fade-up">Smart Models</span>
+  <h2 class="sec-title fade-up">Buy it or rent it.</h2>
+  <div class="compare-grid">
+    <div class="ccard fade-up">
+      <div class="ccard-head">
+        <div class="ccard-title">Buy</div>
+        <span class="ctag buy">Keep forever</span>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>Full ownership</strong> — model, components, and IP rights are yours.</div>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>Keep it forever</strong> — reuse or display anytime.</div>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>3 months maintenance</strong> from delivery date.</div>
+      </div>
+    </div>
+    <div class="ccard hi fade-up" style="transition-delay:0.1s">
+      <div class="ccard-head">
+        <div class="ccard-title">Rent</div>
+        <span class="ctag rent">Pay less, return after</span>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>Sprint (10d)</strong>, Standard (20d), or Extended (30d) rental periods.</div>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>Lower cost</strong> — ideal if you only need it for presentation day.</div>
+      </div>
+      <div class="cfeat">
+        <div class="cfeat-dot"></div>
+        <div class="cfeat-text"><strong>3 months maintenance</strong> included during rental period.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     FAQ
+     ========================================================= -->
+<section id="faq">
+  <span class="sec-label fade-up">FAQ</span>
+  <h2 class="sec-title fade-up">Common questions</h2>
+  <div class="faq-wrap fade-up" id="faq-wrap"></div>
+</section>
+
+<!-- =========================================================
+     CTA
+     ========================================================= -->
+<section class="cta-sec">
+  <div class="cta-glow"></div>
+  <div class="cta-inner fade-up">
+    <h2 class="cta-title">Ready to stop<br>stressing?</h2>
+    <p class="cta-sub">Pick your tier, describe your project, and we'll handle the rest.</p>
+    <button class="btn-main" style="font-size:16px;padding:18px 44px" onclick="openOrder()">Place an order now</button>
+  </div>
+</section>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer>
+  <div class="footer-top">
+
+    <!-- Brand -->
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="footer-logo-icon" style="color:#080808">
+          <svg><use href="#icon-hub"/></svg>
+        </span>
+        Project<span>Hub</span>
+      </div>
+      <p class="footer-tagline">Built for students, by a student.</p>
+    </div>
+
+    <!-- Nav links -->
+    <div class="footer-nav">
+      <div class="footer-nav-label">Pages</div>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-contact">
+      <div class="footer-contact-label">Contact</div>
+      <!-- ✏️ Replace with your email -->
+      <a class="footer-contact-item" href="mailto:projecthub961@gmail.com">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="16" height="12" rx="2"/>
+          <path d="M2 7l8 5 8-5"/>
+        </svg>
+        projecthub961@gmail.com
+      </a>
+      <!-- ✏️ Replace with your phone number -->
+      <a class="footer-contact-item" href="tel:+961760410067">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 4a1 1 0 011-1h2.5a1 1 0 01.97.757l.7 2.8a1 1 0 01-.27.988l-1.2 1.2a11 11 0 004.555 4.555l1.2-1.2a1 1 0 01.988-.27l2.8.7A1 1 0 0117 13.5V16a1 1 0 01-1 1h-1C7.163 17 3 12.837 3 7V6a1 1 0 010-.08V4z"/>
+        </svg>
+        +961 76410067
+      </a>
+    </div>
+
+    <!-- Socials -->
+    <div class="footer-socials-group">
+      <div class="footer-socials-label">Follow us</div>
+      <div class="footer-socials">
+        <!-- ✏️ Replace YOUR_TIKTOK_USERNAME with your TikTok handle -->
+        <a class="footer-social-btn" href="https://www.tiktok.com/@YOUR_TIKTOK_USERNAME" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.53V6.76a4.85 4.85 0 01-1.02-.07z"/>
+          </svg>
+        </a>
+        <!-- ✏️ Replace YOUR_INSTAGRAM_USERNAME with your Instagram handle -->
+        <a class="footer-social-btn" href="https://www.instagram.com/YOUR_INSTAGRAM_USERNAME" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <circle cx="12" cy="12" r="4.5"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 ProjectHub. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- =========================================================
+     ORDER MODAL
+     ========================================================= -->
+<div class="overlay" id="order-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrder()">
+      <svg><use href="#icon-close"/></svg>
+    </button>
+    <div class="modal-title">Place an order</div>
+    <p class="modal-sub">Fill in your details. We'll call you to confirm the final price.</p>
+
+    <div class="fg2">
+      <div>
+        <label class="fl">Your name</label>
+        <input type="text" class="fi" id="o-name" placeholder="e.g. Ali Hassan">
+      </div>
+      <div>
+        <label class="fl">Phone number</label>
+        <input type="tel" class="fi" id="o-phone" placeholder="e.g. +961 70 000 000">
+      </div>
+    </div>
+
+    <div class="fg2">
+      <div>
+        <label class="fl">Project type</label>
+        <select class="fi" id="o-type" onchange="updateForm()">
+          <option value="robotics">Smart Model</option>
+          <option value="ppt">Presentation (PPT)</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">Delivery tier</label>
+        <select class="fi" id="o-tier" onchange="updateForm(); updateBill()">
+          <option value="Standard">Standard</option>
+          <option value="Premium">Premium</option>
+          <option value="VIP">VIP</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="tier-timeframe" style="font-size: 12px; color: var(--accent); margin-top: -12px; margin-bottom: 16px; padding-left: 4px;"></div>
+
+    <div id="o-cat-wrap">
+      <label class="fl">Choose Buy or Rent</label>
+      <select class="fi" id="o-cat" onchange="updateBill()">
+        <option value="buy">Buy — Keep forever (full price)</option>
+        <option value="rent-sprint">Rent — Sprint (10 days) — $10 less than Buy</option>
+        <option value="rent-standard">Rent — Standard (20 days) — $5 less than Buy</option>
+        <option value="rent-extended">Rent — Extended (30 days) — $3 less than Buy</option>
+      </select>
+    </div>
+
+    <div id="o-complexity-wrap">
+      <label class="fl">Project complexity</label>
+      <div class="comp-pick">
+        <div class="cp selected" id="cp-simple" onclick="pickComp('simple')">
+          <div class="cp-name">Simple</div>
+          <div class="cp-price">$15</div>
+        </div>
+        <div class="cp" id="cp-compound" onclick="pickComp('compound')">
+          <div class="cp-name">Compound</div>
+          <div class="cp-price">$25</div>
+        </div>
+        <div class="cp" id="cp-complex" onclick="pickComp('complex')">
+          <div class="cp-name">Complex</div>
+          <div class="cp-price">$40</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="o-slides-wrap" style="display:none">
+      <label class="fl">Number of slides</label>
+      <div class="slide-pick">
+        <div class="sp-opt" id="sl-5" onclick="pickSlides(5)">
+          <div class="sp-opt-num">5</div>
+          <div class="sp-opt-fee">$8</div>
+        </div>
+        <div class="sp-opt selected" id="sl-10" onclick="pickSlides(10)">
+          <div class="sp-opt-num">10</div>
+          <div class="sp-opt-fee">$12</div>
+        </div>
+        <div class="sp-opt" id="sl-15" onclick="pickSlides(15)">
+          <div class="sp-opt-num">15</div>
+          <div class="sp-opt-fee">$18</div>
+        </div>
+        <div class="sp-opt" id="sl-20" onclick="pickSlides(20)">
+          <div class="sp-opt-num">20</div>
+          <div class="sp-opt-fee">$24</div>
+        </div>
+      </div>
+    </div>
+
+    <label class="fl">Describe what you need</label>
+    <textarea class="fi" id="o-desc" rows="3" placeholder="e.g. A solar panel model that lights up when exposed to light..."></textarea>
+
+    <!-- Physical delivery toggle - ONLY for Smart Models -->
+    <div id="delivery-options-wrapper" style="display:block">
+      <div class="delivery-toggle">
+        <button class="dt-btn active" id="dt-pickup" onclick="setDelivery('pickup')">Pick up — Free</button>
+        <button class="dt-btn" id="dt-delivery" onclick="setDelivery('delivery')">Delivery <span class="dt-badge">+$5</span></button>
+      </div>
+      <div id="o-address-wrap" style="display:none">
+        <label class="fl">Delivery address</label>
+        <input type="text" class="fi" id="o-address" placeholder="e.g. Hamra Street, Building X">
+      </div>
+    </div>
+
+    <div class="bill-box">
+      <div class="bill-row"><span id="b-comp-label">Component fee</span><span id="b-comp">$15</span></div>
+      <div class="bill-row"><span>Tier fee</span><span id="b-tier">$0</span></div>
+      <div class="bill-row"><span>+ Labor (extra fee)</span><span id="b-labor">$3</span></div>
+      <div class="bill-row"><span>+ Margin (extra fee)</span><span id="b-margin">$4</span></div>
+      <div class="bill-row" id="b-rent-discount" style="display:none"><span>Rental discount</span><span id="rent-discount-amt">-$0</span></div>
+      <div class="bill-row" id="b-delivery-row" style="display:none"><span>Delivery</span><span>+$5</span></div>
+      <div class="bill-total">
+        <span>Estimated total</span>
+        <span class="bill-total-val" id="b-total">~$22</span>
+      </div>
+      <div class="extra-fee-note">Labor + Margin are extra fees added to component &amp; tier costs</div>
+    </div>
+
+    <div class="notice-box">
+      <strong>This is not the final price.</strong><br>
+      We will call you to agree on the exact price before any work begins.
+    </div>
+
+    <button class="submit-btn" id="submitOrderBtn" onclick="submitOrder()">Confirm Order</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+<script>
+const TELEGRAM_BOT_TOKEN = "8787545527:AAGLlQnAaNwokU_wYPPVN_UyqFIuKdAUs2I";
+const TELEGRAM_CHAT_ID   = "5813748276";
+
+const ROBOTICS_TIER_FEES = { Standard: 0, Premium: 9,  VIP: 19 };
+const ROBOTICS_LABOR     = { Standard: 3, Premium: 7,  VIP: 13 };
+const PPT_TIER_FEES      = { Standard: 0, Premium: 5,  VIP: 10 };
+const PPT_LABOR          = { Standard: 2, Premium: 4,  VIP: 8  };
+const COMP_FEES          = { simple: 15, compound: 25, complex: 40 };
+const SLIDE_FEES         = { 5: 8, 10: 12, 15: 18, 20: 24 };
+const DELIVERY_FEE       = 5;
+const MARGIN             = 4;
+
+const RENT_DISCOUNTS = {
+  'buy': 0,
+  'rent-sprint': 10,
+  'rent-standard': 5,
+  'rent-extended': 3
+};
+
+let selectedComp   = 'simple';
+let selectedSlides = 10;
+let deliveryMethod = 'pickup';
+let isSubmitting   = false;
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('ph-theme', theme);
+  document.getElementById('opt-dark').classList.toggle('active', theme === 'dark');
+  document.getElementById('opt-light').classList.toggle('active', theme === 'light');
+  document.getElementById('mob-dark').classList.toggle('active', theme === 'dark');
+  document.getElementById('mob-light').classList.toggle('active', theme === 'light');
+}
+function toggleSettings() {
+  document.getElementById('settings-btn').classList.toggle('open');
+  document.getElementById('settings-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const btn = document.getElementById('settings-btn');
+  const dd = document.getElementById('settings-dropdown');
+  if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+    btn.classList.remove('open');
+    dd.classList.remove('open');
+  }
+});
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const ham = document.getElementById('nav-hamburger');
+  const open = menu.classList.toggle('open');
+  ham.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('nav-hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+function initScrollObserver() {
+  const els = document.querySelectorAll('.fade-up');
+  if (!window.IntersectionObserver) { els.forEach(el => el.classList.add('visible')); return; }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); obs.unobserve(entry.target); } });
+  }, { threshold: 0.12 });
+  els.forEach(el => obs.observe(el));
+}
+function openOrder(tier) {
+  if (tier) document.getElementById('o-tier').value = tier;
+  document.getElementById('order-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateForm();
+  updateBill();
+}
+function closeOrder() {
+  document.getElementById('order-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  isSubmitting = false;
+}
+document.getElementById('order-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('order-overlay')) closeOrder();
+});
+function updateForm() {
+  const isPPT = document.getElementById('o-type').value === 'ppt';
+  const tier = document.getElementById('o-tier').value;
+  
+  const timeframeDiv = document.getElementById('tier-timeframe');
+  if (isPPT) {
+    if (tier === 'Standard') timeframeDiv.innerHTML = '⏱️ 3–5 day delivery (digital)';
+    else if (tier === 'Premium') timeframeDiv.innerHTML = '⏱️ 2–4 day delivery (digital)';
+    else timeframeDiv.innerHTML = '⏱️ 1–2 day delivery (digital)';
+  } else {
+    if (tier === 'Standard') timeframeDiv.innerHTML = '⏱️ 15–20 day delivery';
+    else if (tier === 'Premium') timeframeDiv.innerHTML = '⏱️ 10–15 day delivery';
+    else timeframeDiv.innerHTML = '⏱️ 5–10 day delivery';
+  }
+  
+  document.getElementById('o-cat-wrap').style.display = isPPT ? 'none' : 'block';
+  document.getElementById('o-complexity-wrap').style.display = isPPT ? 'none' : 'block';
+  document.getElementById('o-slides-wrap').style.display = isPPT ? 'block' : 'none';
+  document.getElementById('b-comp-label').textContent = isPPT ? 'Slide fee' : 'Component fee';
+  
+  const complexBtn = document.getElementById('cp-complex');
+  if (!isPPT && tier === 'VIP') {
+    complexBtn.style.display = 'none';
+    if (selectedComp === 'complex') pickComp('compound');
+  } else {
+    complexBtn.style.display = 'block';
+  }
+  
+  const deliveryWrapper = document.getElementById('delivery-options-wrapper');
+  if (isPPT) {
+    deliveryWrapper.style.display = 'none';
+    document.getElementById('b-delivery-row').style.display = 'none';
+  } else {
+    deliveryWrapper.style.display = 'block';
+    const showDelivery = deliveryMethod === 'delivery';
+    document.getElementById('b-delivery-row').style.display = showDelivery ? 'flex' : 'none';
+    document.getElementById('o-address-wrap').style.display = showDelivery ? 'block' : 'none';
+    document.getElementById('dt-pickup').classList.toggle('active', deliveryMethod === 'pickup');
+    document.getElementById('dt-delivery').classList.toggle('active', deliveryMethod === 'delivery');
+  }
+  updateBill();
+}
+function pickComp(c) {
+  selectedComp = c;
+  document.querySelectorAll('.cp').forEach(el => el.classList.remove('selected'));
+  document.getElementById('cp-' + c).classList.add('selected');
+  updateBill();
+}
+function pickSlides(n) {
+  selectedSlides = n;
+  document.querySelectorAll('.sp-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('sl-' + n).classList.add('selected');
+  updateBill();
+}
+function setDelivery(m) {
+  if (document.getElementById('o-type').value === 'ppt') return;
+  deliveryMethod = m;
+  document.getElementById('dt-pickup').classList.toggle('active', m === 'pickup');
+  document.getElementById('dt-delivery').classList.toggle('active', m === 'delivery');
+  document.getElementById('o-address-wrap').style.display = m === 'delivery' ? 'block' : 'none';
+  document.getElementById('b-delivery-row').style.display = m === 'delivery' ? 'flex' : 'none';
+  updateBill();
+}
+function updateBill() {
+  const isPPT = document.getElementById('o-type').value === 'ppt';
+  const tier = document.getElementById('o-tier').value;
+  const rentOption = document.getElementById('o-cat') ? document.getElementById('o-cat').value : 'buy';
+  
+  let compFee = isPPT ? (SLIDE_FEES[selectedSlides] || 12) : (COMP_FEES[selectedComp] || 10);
+  const discount = (!isPPT && rentOption !== 'buy') ? (RENT_DISCOUNTS[rentOption] || 0) : 0;
+  const discountedCompFee = compFee - discount;
+  
+  const tierFee = isPPT ? (PPT_TIER_FEES[tier] || 0) : (ROBOTICS_TIER_FEES[tier] || 0);
+  const labor = isPPT ? (PPT_LABOR[tier] || 2) : (ROBOTICS_LABOR[tier] || 3);
+  const delivFee = (!isPPT && deliveryMethod === 'delivery') ? DELIVERY_FEE : 0;
+  
+  document.getElementById('b-comp').textContent = '$' + compFee;
+  if (discount > 0) {
+    document.getElementById('b-comp').innerHTML = '$' + compFee + ' <span style="font-size:11px;color:var(--accent2);">(-$' + discount + ' rental)</span>';
+    document.getElementById('b-rent-discount').style.display = 'flex';
+    document.getElementById('rent-discount-amt').textContent = '-$' + discount;
+  } else {
+    document.getElementById('b-comp').innerHTML = '$' + compFee;
+    document.getElementById('b-rent-discount').style.display = 'none';
+  }
+  
+  document.getElementById('b-tier').textContent = '$' + tierFee;
+  document.getElementById('b-labor').textContent = '$' + labor;
+  document.getElementById('b-margin').textContent = '$' + MARGIN;
+  
+  const total = discountedCompFee + tierFee + labor + MARGIN + delivFee;
+  document.getElementById('b-total').textContent = '~$' + total;
+}
+function estimateTotal(order) {
+  const isPPT = order.ptype === 'Presentation';
+  let comp = isPPT ? (SLIDE_FEES[order.slides] || 12) : (COMP_FEES[order.complexity] || 10);
+  const discount = (!isPPT && order.cat && order.cat !== 'buy') ? (RENT_DISCOUNTS[order.cat] || 0) : 0;
+  comp = comp - discount;
+  const tierFee = isPPT ? (PPT_TIER_FEES[order.tier] || 0) : (ROBOTICS_TIER_FEES[order.tier] || 0);
+  const labor = isPPT ? (PPT_LABOR[order.tier] || 2) : (ROBOTICS_LABOR[order.tier] || 3);
+  return comp + tierFee + labor + MARGIN + (order.deliveryFee || 0);
+}
+async function sendToTelegram(order) {
+  const compDetail = order.ptype === 'Presentation' ? `${order.slides} slides` : `${order.complexity} complexity (${order.catDisplay})`;
+  let message = `NEW ORDER ${order.id}\n\nCustomer: ${order.name}\nPhone: ${order.phone}\nProject: ${order.ptype}\nTier: ${order.tier}\nDetails: ${compDetail}\nDescription: ${order.desc}\nEst. Total: ~$${estimateTotal(order)}\nDelivery: ${order.delivery === 'delivery' ? `Delivery (+$${DELIVERY_FEE})` : (order.delivery === 'digital' ? 'Digital' : 'Pickup')}\n${order.address && order.address !== '—' ? `Address: ${order.address}\n` : ''}Order Date: ${order.date}`;
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+    });
+  } catch (err) {}
+}
+async function submitOrder() {
+  if (isSubmitting) { showToast('Please wait...'); return; }
+  const name = document.getElementById('o-name').value.trim();
+  const phone = document.getElementById('o-phone').value.trim();
+  const desc = document.getElementById('o-desc').value.trim();
+  const tier = document.getElementById('o-tier').value;
+  const isPPT = document.getElementById('o-type').value === 'ppt';
+  const catRaw = isPPT ? '—' : document.getElementById('o-cat').value;
+  let catDisplay = catRaw;
+  if (catRaw === 'rent-sprint') catDisplay = 'Rent — Sprint (10 days)';
+  else if (catRaw === 'rent-standard') catDisplay = 'Rent — Standard (20 days)';
+  else if (catRaw === 'rent-extended') catDisplay = 'Rent — Extended (30 days)';
+  else if (catRaw === 'buy') catDisplay = 'Buy (keep forever)';
+  
+  const address = (!isPPT && deliveryMethod === 'delivery') ? document.getElementById('o-address').value.trim() : '';
+  if (!name) { showToast('Please enter your name', true); return; }
+  if (!phone) { showToast('Please enter your phone number', true); return; }
+  if (!desc) { showToast('Please describe your project', true); return; }
+  if (!isPPT && deliveryMethod === 'delivery' && !address) { showToast('Please enter a delivery address', true); return; }
+  isSubmitting = true;
+  const btn = document.getElementById('submitOrderBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
+  const orderId = '#' + (1000 + Math.floor(Math.random() * 1000) + 1);
+  const order = {
+    id: orderId, name, phone, desc,
+    ptype: isPPT ? 'Presentation' : 'Smart Model',
+    tier, cat: catRaw, catDisplay: catDisplay,
+    complexity: isPPT ? '—' : selectedComp,
+    slides: isPPT ? selectedSlides : null,
+    delivery: isPPT ? 'digital' : deliveryMethod,
+    address: address || '—',
+    deliveryFee: (!isPPT && deliveryMethod === 'delivery') ? DELIVERY_FEE : 0,
+    date: new Date().toLocaleDateString('en-US')
+  };
+  await sendToTelegram(order);
+  closeOrder();
+  document.getElementById('o-name').value = '';
+  document.getElementById('o-phone').value = '';
+  document.getElementById('o-desc').value = '';
+  if (document.getElementById('o-address')) document.getElementById('o-address').value = '';
+  showToast(`Order ${orderId} placed! We will call ${phone} to confirm.`);
+  isSubmitting = false;
+  btn.disabled = false;
+  btn.textContent = 'Confirm Order';
+}
+function showToast(message, isError = false) {
+  const existing = document.querySelector('.toast-message');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast-message' + (isError ? ' error' : '');
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+function renderFaq() {
+  const faqs = [
+    { q: 'What does the delivery tier affect?', a: 'For Smart Models: Standard 15–20 days, Premium 10–15 days, VIP 5–10 days. For Presentations: Standard 3–5 days, Premium 2–4 days, VIP 1–2 days.' },
+    { q: 'How is the price calculated?', a: 'Component/slide fee + tier fee + labor + margin. Rental options give discounts: Sprint (-$10), Standard (-$5), Extended (-$3) vs buying.' },
+    { q: 'Can I get my project delivered?', a: 'Yes — only for Smart Models. Choose Delivery at checkout. Flat $5 fee, pickup is free. Presentations are digital only.' },
+    { q: 'What if something breaks after delivery?', a: '3 months of maintenance is included at no cost.' }
+  ];
+  const wrap = document.getElementById('faq-wrap');
+  wrap.innerHTML = '';
+  faqs.forEach((f, i) => {
+    const d = document.createElement('div');
+    d.className = 'fq';
+    d.innerHTML = `<button class="fq-q" onclick="toggleFQ(${i})">${f.q}<span class="fq-icon"><svg width="12" height="12"><use href="#icon-plus"/></svg></span></button><div class="fq-a"><div class="fq-a-inner">${f.a}</div></div>`;
+    wrap.appendChild(d);
+  });
+}
+function toggleFQ(i) {
+  const items = document.querySelectorAll('.fq');
+  const item = items[i];
+  const panel = item.querySelector('.fq-a');
+  const isOpen = item.classList.contains('open');
+  items.forEach(it => { it.classList.remove('open'); it.querySelector('.fq-a').style.maxHeight = '0'; });
+  if (!isOpen) { item.classList.add('open'); panel.style.maxHeight = panel.scrollHeight + 'px'; }
+}
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('ph-theme');
+  if (saved) setTheme(saved);
+  renderFaq();
+  updateForm();
+  updateBill();
+  initScrollObserver();
+});
+</script>
+</body>
+</html>
