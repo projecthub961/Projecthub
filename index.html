@@ -1761,7 +1761,6 @@ textarea.fi { resize: vertical; min-height: 80px; }
     <!-- Contact -->
     <div class="footer-contact">
       <div class="footer-contact-label">Contact</div>
-      <!-- ✏️ Replace with your email -->
       <a class="footer-contact-item" href="mailto:projecthub961@gmail.com">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="4" width="16" height="12" rx="2"/>
@@ -1769,7 +1768,6 @@ textarea.fi { resize: vertical; min-height: 80px; }
         </svg>
         projecthub961@gmail.com
       </a>
-      <!-- ✏️ Replace with your phone number -->
       <a class="footer-contact-item" href="tel:+96176410067">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 4a1 1 0 011-1h2.5a1 1 0 01.97.757l.7 2.8a1 1 0 01-.27.988l-1.2 1.2a11 11 0 004.555 4.555l1.2-1.2a1 1 0 01.988-.27l2.8.7A1 1 0 0117 13.5V16a1 1 0 01-1 1h-1C7.163 17 3 12.837 3 7V6a1 1 0 010-.08V4z"/>
@@ -1782,13 +1780,11 @@ textarea.fi { resize: vertical; min-height: 80px; }
     <div class="footer-socials-group">
       <div class="footer-socials-label">Follow us</div>
       <div class="footer-socials">
-        <!-- ✏️ Replace YOUR_TIKTOK_USERNAME with your TikTok handle -->
         <a class="footer-social-btn" href="https://www.tiktok.com/@YOUR_TIKTOK_USERNAME" target="_blank" rel="noopener" aria-label="TikTok">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.53V6.76a4.85 4.85 0 01-1.02-.07z"/>
           </svg>
         </a>
-        <!-- ✏️ Replace YOUR_INSTAGRAM_USERNAME with your Instagram handle -->
         <a class="footer-social-btn" href="https://www.instagram.com/YOUR_INSTAGRAM_USERNAME" target="_blank" rel="noopener" aria-label="Instagram">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
@@ -1881,19 +1877,19 @@ textarea.fi { resize: vertical; min-height: 80px; }
       <div class="slide-pick">
         <div class="sp-opt" id="sl-5" onclick="pickSlides(5)">
           <div class="sp-opt-num">5</div>
-          <div class="sp-opt-fee">$8</div>
+          <div class="sp-opt-fee">$5</div>
         </div>
         <div class="sp-opt selected" id="sl-10" onclick="pickSlides(10)">
           <div class="sp-opt-num">10</div>
-          <div class="sp-opt-fee">$12</div>
+          <div class="sp-opt-fee">$10</div>
         </div>
         <div class="sp-opt" id="sl-15" onclick="pickSlides(15)">
           <div class="sp-opt-num">15</div>
-          <div class="sp-opt-fee">$18</div>
+          <div class="sp-opt-fee">$15</div>
         </div>
         <div class="sp-opt" id="sl-20" onclick="pickSlides(20)">
           <div class="sp-opt-num">20</div>
-          <div class="sp-opt-fee">$24</div>
+          <div class="sp-opt-fee">$18</div>
         </div>
       </div>
     </div>
@@ -1917,17 +1913,16 @@ textarea.fi { resize: vertical; min-height: 80px; }
       <div class="bill-row"><span id="b-comp-label">Component fee</span><span id="b-comp">$15</span></div>
       <div class="bill-row"><span>Tier fee</span><span id="b-tier">$0</span></div>
       <div class="bill-row"><span>+ Labor (extra fee)</span><span id="b-labor">$3</span></div>
-      <div class="bill-row"><span>+ Margin (extra fee)</span><span id="b-margin">$4</span></div>
       <div class="bill-row" id="b-rent-discount" style="display:none"><span>Rental discount</span><span id="rent-discount-amt">-$0</span></div>
       <div class="bill-row" id="b-delivery-row" style="display:none"><span>Delivery</span><span>+$5</span></div>
       <div class="bill-total">
         <span>Estimated total</span>
-        <span class="bill-total-val" id="b-total">~$22</span>
+        <span class="bill-total-val" id="b-total">~$18</span>
       </div>
-      <div class="extra-fee-note">Labor + Margin are extra fees added to component &amp; tier costs</div>
+      <div class="extra-fee-note">Labor is an extra fee added to component &amp; tier costs</div>
     </div>
 
-    <div class="notice-box">
+    <div class="notice-box" id="notice-not-final">
       <strong>This is not the final price.</strong><br>
       We will call you to agree on the exact price before any work begins.
     </div>
@@ -1948,9 +1943,8 @@ const ROBOTICS_LABOR     = { Standard: 3, Premium: 7,  VIP: 13 };
 const PPT_TIER_FEES      = { Standard: 0, Premium: 5,  VIP: 10 };
 const PPT_LABOR          = { Standard: 2, Premium: 4,  VIP: 8  };
 const COMP_FEES          = { simple: 15, compound: 25, complex: 40 };
-const SLIDE_FEES         = { 5: 8, 10: 12, 15: 18, 20: 24 };
+const SLIDE_FEES         = { 5: 5, 10: 10, 15: 15, 20: 18 };
 const DELIVERY_FEE       = 5;
-const MARGIN             = 4;
 
 const RENT_DISCOUNTS = {
   'buy': 0,
@@ -2062,6 +2056,7 @@ function updateForm() {
     document.getElementById('dt-pickup').classList.toggle('active', deliveryMethod === 'pickup');
     document.getElementById('dt-delivery').classList.toggle('active', deliveryMethod === 'delivery');
   }
+  document.getElementById('notice-not-final').style.display = isPPT ? 'none' : 'block';
   updateBill();
 }
 function pickComp(c) {
@@ -2090,7 +2085,7 @@ function updateBill() {
   const tier = document.getElementById('o-tier').value;
   const rentOption = document.getElementById('o-cat') ? document.getElementById('o-cat').value : 'buy';
   
-  let compFee = isPPT ? (SLIDE_FEES[selectedSlides] || 12) : (COMP_FEES[selectedComp] || 10);
+  let compFee = isPPT ? (SLIDE_FEES[selectedSlides] || 10) : (COMP_FEES[selectedComp] || 10);
   const discount = (!isPPT && rentOption !== 'buy') ? (RENT_DISCOUNTS[rentOption] || 0) : 0;
   const discountedCompFee = compFee - discount;
   
@@ -2110,19 +2105,18 @@ function updateBill() {
   
   document.getElementById('b-tier').textContent = '$' + tierFee;
   document.getElementById('b-labor').textContent = '$' + labor;
-  document.getElementById('b-margin').textContent = '$' + MARGIN;
   
-  const total = discountedCompFee + tierFee + labor + MARGIN + delivFee;
+  const total = discountedCompFee + tierFee + labor + delivFee;
   document.getElementById('b-total').textContent = '~$' + total;
 }
 function estimateTotal(order) {
   const isPPT = order.ptype === 'Presentation';
-  let comp = isPPT ? (SLIDE_FEES[order.slides] || 12) : (COMP_FEES[order.complexity] || 10);
+  let comp = isPPT ? (SLIDE_FEES[order.slides] || 10) : (COMP_FEES[order.complexity] || 10);
   const discount = (!isPPT && order.cat && order.cat !== 'buy') ? (RENT_DISCOUNTS[order.cat] || 0) : 0;
   comp = comp - discount;
   const tierFee = isPPT ? (PPT_TIER_FEES[order.tier] || 0) : (ROBOTICS_TIER_FEES[order.tier] || 0);
   const labor = isPPT ? (PPT_LABOR[order.tier] || 2) : (ROBOTICS_LABOR[order.tier] || 3);
-  return comp + tierFee + labor + MARGIN + (order.deliveryFee || 0);
+  return comp + tierFee + labor + (order.deliveryFee || 0);
 }
 async function sendToTelegram(order) {
   const compDetail = order.ptype === 'Presentation' ? `${order.slides} slides` : `${order.complexity} complexity (${order.catDisplay})`;
@@ -2192,7 +2186,7 @@ function showToast(message, isError = false) {
 function renderFaq() {
   const faqs = [
     { q: 'What does the delivery tier affect?', a: 'For Smart Models: Standard 15–20 days, Premium 10–15 days, VIP 5–10 days. For Presentations: Standard 3–5 days, Premium 2–4 days, VIP 1–2 days.' },
-    { q: 'How is the price calculated?', a: 'Component/slide fee + tier fee + labor + margin. Rental options give discounts: Sprint (-$10), Standard (-$5), Extended (-$3) vs buying.' },
+    { q: 'How is the price calculated?', a: 'Component/slide fee + tier fee + labor. Rental options give discounts: Sprint (-$10), Standard (-$5), Extended (-$3) vs buying.' },
     { q: 'Can I get my project delivered?', a: 'Yes — only for Smart Models. Choose Delivery at checkout. Flat $5 fee, pickup is free. Presentations are digital only.' },
     { q: 'What if something breaks after delivery?', a: '3 months of maintenance is included at no cost.' }
   ];
